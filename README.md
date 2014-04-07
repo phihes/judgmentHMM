@@ -1,12 +1,13 @@
-Modeling user judgments with HMM
+Modeling user judgments using HMM
 ==============================
 
 Includes four different scripts, examples (in /src/) and data.
+
+Requirements: Python 2.7, libraries provided by Anaconda (https://store.continuum.io/cshop/anaconda/), NLTK (http://www.nltk.org/), GHMM (http://ghmm.org/).
 ___
 
 
 ## Scripts (/src/)
-
 
 **judgmentHMM.py** - A small framework to create and validate different models of judgments. Provides easy setup of parameter sweeps, model performance metrics and model comparison. Data are passed as CSV. The included class *Experiment* allows to set up and run one or a series of experiments (creating a model with certain parameters, validating the model, calculating the performance metrics). Results are saved as csv, where each line corresponds to one experiment / parameters setting. See */docs/index.html* and the source for more information.
 
