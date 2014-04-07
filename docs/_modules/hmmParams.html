@@ -1,0 +1,158 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>hmmParams &mdash; src 2014.04 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2014.04',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="src 2014.04 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">src 2014.04 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for hmmParams</h1><div class="highlight"><pre>
+<span class="c"># return labeled data as sequences</span>
+<span class="k">def</span> <span class="nf">getSequences</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">rated</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<div class="viewcode-block" id="getSequences"><a class="viewcode-back" href="../hmmParams.html#hmmParams.getSequences">[docs]</a>   <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s">&#39;label&#39;</span><span class="p">])</span>
+   <span class="n">seqs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+      
+   <span class="k">for</span> <span class="n">name</span><span class="p">,</span><span class="n">group</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+      <span class="n">vals</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+      <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
+          <span class="n">vals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">group</span><span class="p">[</span><span class="n">p</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+      
+      <span class="n">features</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span><span class="o">*</span><span class="n">vals</span><span class="p">)</span>
+      
+      <span class="k">if</span><span class="p">(</span><span class="n">rated</span><span class="p">):</span>
+          <span class="n">ratings</span> <span class="o">=</span> <span class="n">group</span><span class="p">[</span><span class="s">&#39;rating&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+          <span class="n">features</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span><span class="o">*</span><span class="p">[</span><span class="n">features</span><span class="p">,</span><span class="n">ratings</span><span class="p">])</span>
+      
+      <span class="n">seqs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">features</span><span class="p">)</span>
+
+   <span class="k">return</span> <span class="n">seqs</span>
+
+<span class="c"># return HMM parameters init, trans</span>
+<span class="k">def</span> <span class="nf">hmmMlParams</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="n">stateAlphabet</span><span class="p">):</span></div>
+<div class="viewcode-block" id="hmmMlParams"><a class="viewcode-back" href="../hmmParams.html#hmmParams.hmmMlParams">[docs]</a>
+   <span class="n">st</span> <span class="o">=</span> <span class="n">getSequences</span><span class="p">(</span><span class="n">data</span><span class="p">,[</span><span class="s">&#39;rating&#39;</span><span class="p">])</span>
+
+   <span class="c"># initialize matrices</span>
+   <span class="n">states_count</span> <span class="o">=</span> <span class="p">{</span><span class="n">a</span><span class="p">:</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">stateAlphabet</span><span class="p">}</span>
+   <span class="n">trans_abs</span> <span class="o">=</span> <span class="p">{</span><span class="n">a</span><span class="p">:</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">stateAlphabet</span><span class="p">}</span>
+   <span class="n">trans_ind</span> <span class="o">=</span> <span class="p">{</span><span class="n">a</span><span class="p">:</span> <span class="p">{}</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">stateAlphabet</span><span class="p">}</span>
+   <span class="n">transitions</span> <span class="o">=</span> <span class="p">{</span><span class="n">a</span><span class="p">:</span> <span class="p">{}</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">stateAlphabet</span><span class="p">}</span>
+   <span class="n">init</span> <span class="o">=</span> <span class="p">{</span><span class="n">a</span><span class="p">:</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">stateAlphabet</span><span class="p">}</span>
+   <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">stateAlphabet</span><span class="p">:</span>
+      <span class="n">trans_ind</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">a</span><span class="p">:</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">stateAlphabet</span><span class="p">}</span>
+      <span class="n">transitions</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">a</span><span class="p">:</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">stateAlphabet</span><span class="p">}</span>
+
+   <span class="c"># for each state sequence</span>
+   <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">seq</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">st</span><span class="p">):</span>
+      <span class="c"># for each state transition</span>
+      <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">state</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">seq</span><span class="p">):</span>
+          <span class="c"># count number of state</span>
+          <span class="n">states_count</span><span class="p">[</span><span class="n">state</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+          <span class="c"># count number of occurences for initialization            </span>
+          <span class="k">if</span><span class="p">(</span><span class="n">i</span><span class="o">==</span><span class="mi">0</span><span class="p">):</span>
+              <span class="n">init</span><span class="p">[</span><span class="n">state</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+          <span class="c"># count absolute transitions</span>
+          <span class="k">if</span><span class="p">(</span><span class="n">i</span><span class="o">&lt;</span><span class="nb">len</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+              <span class="c"># inc count of all transitions from this state</span>
+              <span class="n">trans_abs</span><span class="p">[</span><span class="n">state</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+              <span class="c"># inc count of transitions from this state to next one</span>
+              <span class="n">trans_ind</span><span class="p">[</span><span class="n">state</span><span class="p">][</span><span class="n">seq</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]]</span> <span class="o">+=</span> <span class="mi">1</span>
+              
+
+   <span class="c"># divide relative transitions s1-&gt;s2 by absolute s1-&gt;all</span>
+   <span class="k">for</span> <span class="n">s1</span> <span class="ow">in</span> <span class="n">stateAlphabet</span><span class="p">:</span>
+      <span class="k">for</span> <span class="n">s2</span> <span class="ow">in</span> <span class="n">stateAlphabet</span><span class="p">:</span>
+         <span class="n">transitions</span><span class="p">[</span><span class="n">s1</span><span class="p">][</span><span class="n">s2</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span>
+                   <span class="n">trans_ind</span><span class="p">[</span><span class="n">s1</span><span class="p">][</span><span class="n">s2</span><span class="p">])</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">trans_abs</span><span class="p">[</span><span class="n">s1</span><span class="p">])</span>
+          
+   <span class="c"># divide number of state init occ. by number of seq</span>
+   <span class="n">init</span> <span class="o">=</span> <span class="p">{</span><span class="n">state</span><span class="p">:</span><span class="nb">float</span><span class="p">(</span><span class="n">init</span><span class="p">[</span><span class="n">state</span><span class="p">])</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">st</span><span class="p">))</span> <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="n">init</span><span class="p">}</span>
+
+   <span class="n">transMat</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">transitions</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+
+   <span class="k">return</span> <span class="n">init</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span><span class="n">transMat</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">src 2014.04 documentation</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Philipp Hess.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

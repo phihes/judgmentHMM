@@ -1,0 +1,7 @@
+judgmentHMM Module
+==================
+
+.. automodule:: judgmentHMM
+    :members:
+    :undoc-members:
+    :show-inheritance:

@@ -1,0 +1,7 @@
+LR Module
+=========
+
+.. automodule:: LR
+    :members:
+    :undoc-members:
+    :show-inheritance:

@@ -1,0 +1,7 @@
+PCA Module
+==========
+
+.. automodule:: PCA
+    :members:
+    :undoc-members:
+    :show-inheritance:
